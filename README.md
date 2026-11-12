@@ -24,26 +24,18 @@
 ## 部署流程
 ---
 ### Docker Compose部署
-#### 快速部署
-面板端(稳定版)：
-```bash
-curl -L https://raw.githubusercontent.com/bqlpfy/flux-panel/refs/heads/main/panel_install.sh -o panel_install.sh && chmod +x panel_install.sh && ./panel_install.sh
-```
-节点端(稳定版)：
-```bash
-curl -L https://raw.githubusercontent.com/bqlpfy/flux-panel/refs/heads/main/install.sh -o install.sh && chmod +x install.sh && ./install.sh
+#### Flux Otter 1.4.3-otter.1
 
+面板端（全新安装）：
+```bash
+curl -fL https://github.com/anyiz/flux-panel_otter/releases/download/1.4.3-otter.1/panel_install.sh -o panel_install.sh && chmod +x panel_install.sh && ./panel_install.sh
+```
+中转节点 Agent：
+```bash
+curl -fL https://github.com/anyiz/flux-panel_otter/releases/download/1.4.3-otter.1/install.sh -o install.sh && chmod +x install.sh && ./install.sh -a PANEL_IP:6365 -s NODE_SECRET
 ```
 
-面板端(开发版)：
-```bash
-curl -L https://raw.githubusercontent.com/bqlpfy/flux-panel/refs/heads/beta/panel_install.sh -o panel_install.sh && chmod +x panel_install.sh && ./panel_install.sh
-```
-节点端(开发版)：
-```bash
-curl -L https://raw.githubusercontent.com/bqlpfy/flux-panel/refs/heads/beta/install.sh -o install.sh && chmod +x install.sh && ./install.sh
-
-```
+现有面板升级前请先备份数据库并阅读 [升级说明](doc/dockerhub-upgrade.md)。节点 Agent 与面板镜像分别发布；只替换 Docker 镜像不会更新 `/etc/gost/gost`。
 
 #### 默认管理员账号
 

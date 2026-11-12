@@ -113,6 +113,7 @@ func main() {
 		fmt.Println("请确保当前目录存在 config.json 文件")
 		os.Exit(1)
 	}
+	service.SetProtocolBlock(config.Http, config.Tls, config.Socks)
 
 	fmt.Println("✅ 配置加载成功 - addr: %s", config.Addr)
 

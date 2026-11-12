@@ -19,7 +19,7 @@ get_architecture() {
 # 构建下载地址
 build_download_url() {
     local ARCH=$(get_architecture)
-    echo "https://github.com/bqlpfy/flux-panel/releases/download/1.4.3/gost-${ARCH}"
+    echo "https://github.com/anyiz/flux-panel_otter/releases/download/1.4.3-otter.1/gost-${ARCH}"
 }
 
 # 下载地址
@@ -164,23 +164,16 @@ install_gost() {
 
   mkdir -p "$INSTALL_DIR"
 
-  # 停止并禁用已有服务
-  if systemctl list-units --full -all | grep -Fq "gost.service"; then
-    echo "🔍 检测到已存在的gost服务"
-    systemctl stop gost 2>/dev/null && echo "🛑 停止服务"
-    systemctl disable gost 2>/dev/null && echo "🚫 禁用自启"
-  fi
-
-  # 删除旧文件
-  [[ -f "$INSTALL_DIR/gost" ]] && echo "🧹 删除旧文件 gost" && rm -f "$INSTALL_DIR/gost"
-
   # 下载 gost
   echo "⬇️ 下载 gost 中..."
-  curl -L "$DOWNLOAD_URL" -o "$INSTALL_DIR/gost"
-  if [[ ! -f "$INSTALL_DIR/gost" || ! -s "$INSTALL_DIR/gost" ]]; then
+  if ! curl -fL "$DOWNLOAD_URL" -o "$INSTALL_DIR/gost.new" || [[ ! -s "$INSTALL_DIR/gost.new" ]]; then
     echo "❌ 下载失败，请检查网络或下载链接。"
     exit 1
   fi
+  if systemctl list-units --full -all | grep -Fq "gost.service"; then
+    systemctl stop gost
+  fi
+  mv "$INSTALL_DIR/gost.new" "$INSTALL_DIR/gost"
   chmod +x "$INSTALL_DIR/gost"
   echo "✅ 下载完成"
 
@@ -260,8 +253,7 @@ update_gost() {
   
   # 先下载新版本
   echo "⬇️ 下载最新版本..."
-  curl -L "$DOWNLOAD_URL" -o "$INSTALL_DIR/gost.new"
-  if [[ ! -f "$INSTALL_DIR/gost.new" || ! -s "$INSTALL_DIR/gost.new" ]]; then
+  if ! curl -fL "$DOWNLOAD_URL" -o "$INSTALL_DIR/gost.new" || [[ ! -s "$INSTALL_DIR/gost.new" ]]; then
     echo "❌ 下载失败。"
     return 1
   fi

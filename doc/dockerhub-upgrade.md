@@ -9,6 +9,8 @@ The `linux/amd64` images from this fork were built, smoke-tested, pushed, and ve
 
 For this release, set `FLUX_DOCKERHUB_USER=anyi662` and `FLUX_IMAGE_TAG=1.4.3-otter.1` in the production `.env`. The production Compose example with IPv6 is `docker-compose-v6.yml`.
 
+The matching [GitHub Release](https://github.com/anyiz/flux-panel_otter/releases/tag/1.4.3-otter.1) contains `gost-amd64`, `gost-arm64`, both installers, both Compose files, `gost.sql`, and the one-time migration. The `install.sh` in that release downloads GOST from the same release. For a future release, update the pinned tag in both installers, the image tag, and the release notes before pushing the new `*-otter.*` Git tag; `.github/workflows/release.yml` builds and publishes the assets.
+
 The backend and frontend already have Dockerfiles. This fork's `docker-compose-v4.yml` and `docker-compose-v6.yml` now read `FLUX_DOCKERHUB_USER` and `FLUX_IMAGE_TAG` to select your images. The MySQL image, volume, ports, and network definitions are unchanged. The ingress gost process is separate and needs its own upgrade before PROXY Protocol is enabled.
 
 From a Linux host with Docker Buildx, log in to Docker Hub and build/push both images from this exact fork:

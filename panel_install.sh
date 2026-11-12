@@ -8,9 +8,12 @@ export LC_ALL=C
 
 
 # 全局下载地址配置
-DOCKER_COMPOSEV4_URL="https://github.com/bqlpfy/flux-panel/releases/download/1.4.3/docker-compose-v4.yml"
-DOCKER_COMPOSEV6_URL="https://github.com/bqlpfy/flux-panel/releases/download/1.4.3/docker-compose-v6.yml"
-GOST_SQL_URL="https://github.com/bqlpfy/flux-panel/releases/download/1.4.3/gost.sql"
+RELEASE_BASE_URL="https://github.com/anyiz/flux-panel_otter/releases/download/1.4.3-otter.1"
+DOCKER_COMPOSEV4_URL="${RELEASE_BASE_URL}/docker-compose-v4.yml"
+DOCKER_COMPOSEV6_URL="${RELEASE_BASE_URL}/docker-compose-v6.yml"
+GOST_SQL_URL="${RELEASE_BASE_URL}/gost.sql"
+FLUX_DOCKERHUB_USER="anyi662"
+FLUX_IMAGE_TAG="1.4.3-otter.1"
 
 COUNTRY=$(curl -s https://ipinfo.io/country)
 if [ "$COUNTRY" = "CN" ]; then
@@ -187,6 +190,23 @@ get_config_params() {
   JWT_SECRET=$(generate_random)
 }
 
+ensure_image_env() {
+  if [[ ! -f .env ]]; then
+    echo "❌ 未找到 .env，请在原面板部署目录执行更新。"
+    return 1
+  fi
+  if grep -q '^FLUX_DOCKERHUB_USER=' .env; then
+    sed -i "s/^FLUX_DOCKERHUB_USER=.*/FLUX_DOCKERHUB_USER=$FLUX_DOCKERHUB_USER/" .env
+  else
+    printf '\nFLUX_DOCKERHUB_USER=%s\n' "$FLUX_DOCKERHUB_USER" >> .env
+  fi
+  if grep -q '^FLUX_IMAGE_TAG=' .env; then
+    sed -i "s/^FLUX_IMAGE_TAG=.*/FLUX_IMAGE_TAG=$FLUX_IMAGE_TAG/" .env
+  else
+    printf 'FLUX_IMAGE_TAG=%s\n' "$FLUX_IMAGE_TAG" >> .env
+  fi
+}
+
 # 安装功能
 install_panel() {
   echo "🚀 开始安装面板..."
@@ -196,14 +216,16 @@ install_panel() {
   echo "🔽 下载必要文件..."
   DOCKER_COMPOSE_URL=$(get_docker_compose_url)
   echo "📡 选择配置文件：$(basename "$DOCKER_COMPOSE_URL")"
-  curl -L -o docker-compose.yml "$DOCKER_COMPOSE_URL"
+  curl -fL -o docker-compose.yml.new "$DOCKER_COMPOSE_URL"
+  mv docker-compose.yml.new docker-compose.yml
 
   # 检查 gost.sql 是否已存在
   if [[ -f "gost.sql" ]]; then
     echo "⏭️ 跳过下载: gost.sql (使用当前位置的文件)"
   else
     echo "📡 下载数据库初始化文件..."
-    curl -L -o gost.sql "$GOST_SQL_URL"
+    curl -fL -o gost.sql.new "$GOST_SQL_URL"
+    mv gost.sql.new gost.sql
   fi
   echo "✅ 文件准备完成"
 
@@ -220,6 +242,8 @@ DB_PASSWORD=$DB_PASSWORD
 JWT_SECRET=$JWT_SECRET
 FRONTEND_PORT=$FRONTEND_PORT
 BACKEND_PORT=$BACKEND_PORT
+FLUX_DOCKERHUB_USER=$FLUX_DOCKERHUB_USER
+FLUX_IMAGE_TAG=$FLUX_IMAGE_TAG
 EOF
 
   echo "🚀 启动 docker 服务..."
@@ -243,7 +267,9 @@ update_panel() {
   echo "🔽 下载最新配置文件..."
   DOCKER_COMPOSE_URL=$(get_docker_compose_url)
   echo "📡 选择配置文件：$(basename "$DOCKER_COMPOSE_URL")"
-  curl -L -o docker-compose.yml "$DOCKER_COMPOSE_URL"
+  curl -fL -o docker-compose.yml.new "$DOCKER_COMPOSE_URL"
+  mv docker-compose.yml.new docker-compose.yml
+  ensure_image_env
   echo "✅ 下载完成"
 
   # 自动检测并配置 IPv6 支持
@@ -903,6 +929,23 @@ DEALLOCATE PREPARE stmt;
 UPDATE \`statistics_flow\`
 SET \`created_time\` = UNIX_TIMESTAMP() * 1000
 WHERE \`created_time\` = 0 OR \`created_time\` IS NULL;
+
+-- 新版中转规则：向落地节点发送 PROXY Protocol 的开关。
+SET @sql = (
+  SELECT IF(
+    NOT EXISTS (
+      SELECT 1 FROM information_schema.COLUMNS
+      WHERE table_schema = DATABASE()
+        AND table_name = 'forward'
+        AND column_name = 'proxy_protocol_send'
+    ),
+    'ALTER TABLE \`forward\` ADD COLUMN \`proxy_protocol_send\` INT NOT NULL DEFAULT 0;',
+    'SELECT "Column proxy_protocol_send already exists";'
+  )
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 EOF
 
