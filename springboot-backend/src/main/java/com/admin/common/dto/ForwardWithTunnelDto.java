@@ -86,6 +86,10 @@ public class ForwardWithTunnelDto {
 
     private String strategy;
 
+    @javax.validation.constraints.Min(0)
+    @javax.validation.constraints.Max(2)
+    private Integer proxyProtocolSend = 0;
+
     private Integer inx;
 
     private String interfaceName;

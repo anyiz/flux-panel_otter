@@ -56,6 +56,7 @@ interface Forward {
   remoteAddr: string;
   interfaceName?: string;
   strategy: string;
+  proxyProtocolSend?: number;
   status: number;
   inFlow: number;
   outFlow: number;
@@ -82,6 +83,7 @@ interface ForwardForm {
   remoteAddr: string;
   interfaceName?: string;
   strategy: string;
+  proxyProtocolSend?: number;
 }
 
 interface AddressItem {
@@ -191,7 +193,7 @@ export default function ForwardPage() {
     inPort: null,
     remoteAddr: '',
     interfaceName: '',
-    strategy: 'fifo'
+    proxyProtocolSend: 0, strategy: 'fifo'
   });
   
   // 表单验证错误
@@ -444,7 +446,7 @@ export default function ForwardPage() {
       inPort: null,
       remoteAddr: '',
       interfaceName: '',
-      strategy: 'fifo'
+      proxyProtocolSend: 0, strategy: 'fifo'
     });
     setSelectedTunnel(null);
     setErrors({});
@@ -462,7 +464,7 @@ export default function ForwardPage() {
       inPort: forward.inPort,
       remoteAddr: forward.remoteAddr.split(',').join('\n'),
       interfaceName: forward.interfaceName || '',
-      strategy: forward.strategy || 'fifo'
+      proxyProtocolSend: forward.proxyProtocolSend || 0, strategy: forward.strategy || 'fifo'
     });
     const tunnel = tunnels.find(t => t.id === forward.tunnelId);
     setSelectedTunnel(tunnel || null);
@@ -541,7 +543,7 @@ export default function ForwardPage() {
           inPort: form.inPort,
           remoteAddr: processedRemoteAddr,
           interfaceName: form.interfaceName,
-          strategy: addressCount > 1 ? form.strategy : 'fifo'
+          proxyProtocolSend: form.proxyProtocolSend || 0, strategy: addressCount > 1 ? form.strategy : 'fifo'
         };
         res = await updateForward(updateData);
       } else {
@@ -552,7 +554,7 @@ export default function ForwardPage() {
           inPort: form.inPort,
           remoteAddr: processedRemoteAddr,
           interfaceName: form.interfaceName,
-          strategy: addressCount > 1 ? form.strategy : 'fifo'
+          proxyProtocolSend: form.proxyProtocolSend || 0, strategy: addressCount > 1 ? form.strategy : 'fifo'
         };
         res = await createForward(createData);
       }
@@ -952,7 +954,7 @@ export default function ForwardPage() {
             tunnelId: selectedTunnelForImport, // 使用用户选择的隧道
             inPort: portNumber, // 使用指定端口或自动分配
             remoteAddr: remoteAddr.trim(),
-            strategy: 'fifo'
+            proxyProtocolSend: 0, strategy: 'fifo'
           });
 
           if (response.code === 0) {
@@ -1628,6 +1630,11 @@ export default function ForwardPage() {
                       maxRows={6}
                     />
                     
+                    <Select label="向落地传递真实 IP（仅 TCP）" description="落地必须开启 PROXY 接收；UDP 不透传，严格限额订阅应禁用 UDP。"
+                      selectedKeys={[String(form.proxyProtocolSend || 0)]}
+                      onSelectionChange={(keys) => setForm(prev => ({...prev, proxyProtocolSend: Number(Array.from(keys)[0])}))}>
+                      <SelectItem key="0">关闭</SelectItem><SelectItem key="1">PROXY v1</SelectItem><SelectItem key="2">PROXY v2</SelectItem>
+                    </Select>
                     <Input
                       label="出口网卡名或IP"
                       placeholder="请输入出口网卡名或IP"

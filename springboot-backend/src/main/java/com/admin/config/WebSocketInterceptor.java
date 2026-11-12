@@ -51,6 +51,7 @@ public class WebSocketInterceptor extends HttpSessionHandshakeInterceptor {
             attributes.put("id", node.getId());
             attributes.put("nodeSecret", secret);
             attributes.put("nodeVersion", version);
+            attributes.put("proxyProtocolSend", "1".equals(serverHttpRequest.getServletRequest().getParameter("proxy_protocol_send_tcp")));
             attributes.put("http",http);
             attributes.put("tls",tls);
             attributes.put("socks",socks);

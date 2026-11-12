@@ -4,7 +4,7 @@
 
     <!-- 查询所有转发信息（包含隧道信息） -->
     <select id="selectAllForwardsWithTunnel" resultType="com.admin.common.dto.ForwardWithTunnelDto">
-        SELECT 
+        SELECT
             f.id,
             f.user_id AS userId,
             f.name,
@@ -12,6 +12,7 @@
             f.in_port AS inPort,
             f.out_port AS outPort,
             f.remote_addr AS remoteAddr,
+            f.proxy_protocol_send AS proxyProtocolSend,
             f.status,
             f.created_time AS createdTime,
             f.updated_time AS updatedTime,
@@ -26,17 +27,17 @@
             t.out_ip AS outIp,
             t.type,
             t.protocol
-        FROM 
+        FROM
             forward f
-        LEFT JOIN 
+        LEFT JOIN
             tunnel t ON f.tunnel_id = t.id
-        ORDER BY 
+        ORDER BY
             f.created_time DESC
     </select>
 
     <!-- 根据用户ID查询转发信息（包含隧道信息） -->
     <select id="selectForwardsWithTunnelByUserId" resultType="com.admin.common.dto.ForwardWithTunnelDto">
-        SELECT 
+        SELECT
             f.id,
             f.user_id AS userId,
             f.name,
@@ -44,6 +45,7 @@
             f.in_port AS inPort,
             f.out_port AS outPort,
             f.remote_addr AS remoteAddr,
+            f.proxy_protocol_send AS proxyProtocolSend,
             f.status,
             f.created_time AS createdTime,
             f.updated_time AS updatedTime,
@@ -58,13 +60,13 @@
             t.out_ip AS outIp,
             t.type,
             t.protocol
-        FROM 
+        FROM
             forward f
-        LEFT JOIN 
+        LEFT JOIN
             tunnel t ON f.tunnel_id = t.id
-        WHERE 
+        WHERE
             f.user_id = #{userId}
-        ORDER BY 
+        ORDER BY
             f.created_time DESC
     </select>
 

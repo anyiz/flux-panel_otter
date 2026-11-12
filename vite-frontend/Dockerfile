@@ -4,7 +4,7 @@ FROM node:20.19.0 AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm npm install --legacy-peer-deps --no-audit --no-fund --loglevel=info --fetch-retries=2 --fetch-timeout=60000
 
 COPY . .
 RUN npm run build
@@ -18,4 +18,4 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"] 
+CMD ["nginx", "-g", "daemon off;"]

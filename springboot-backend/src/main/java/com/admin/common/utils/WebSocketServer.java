@@ -209,6 +209,11 @@ public class WebSocketServer extends TextWebSocketHandler {
         return cryptoCache.computeIfAbsent(secret, AESCrypto::create);
     }
 
+    public static boolean supportsProxyProtocol(Long nodeId) {
+        WebSocketSession session = nodeSessions.get(nodeId);
+        return session != null && session.isOpen() && Boolean.TRUE.equals(session.getAttributes().get("proxyProtocolSend"));
+    }
+
     // 建立连接
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {

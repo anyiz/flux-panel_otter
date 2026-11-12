@@ -21,6 +21,10 @@ public class ForwardDto {
     private String remoteAddr;
 
     private String strategy;
+
+    @javax.validation.constraints.Min(0)
+    @javax.validation.constraints.Max(2)
+    private Integer proxyProtocolSend = 0;
     
     /**
      * 入口端口（可选，为空时自动分配）

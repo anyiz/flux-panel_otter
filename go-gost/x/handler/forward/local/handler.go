@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"github.com/go-gost/x/internal/net/proxyproto"
 	"net"
 	"time"
 
@@ -124,7 +125,7 @@ func (h *forwardHandler) Handle(ctx context.Context, conn net.Conn, opts ...hand
 	}
 
 	var proto string
-	if network == "tcp" && h.md.sniffing {
+	if network == "tcp" && h.md.sniffing && h.md.proxyProtocol == 0 {
 		if h.md.sniffingTimeout > 0 {
 			conn.SetReadDeadline(time.Now().Add(h.md.sniffingTimeout))
 		}
@@ -218,6 +219,11 @@ func (h *forwardHandler) Handle(ctx context.Context, conn net.Conn, opts ...hand
 	}
 	defer cc.Close()
 
+	if network == "tcp" && h.md.proxyProtocol > 0 {
+		if err := proxyproto.WriteClientHeader(h.md.proxyProtocol, conn.RemoteAddr(), conn.LocalAddr(), cc); err != nil {
+			return err
+		}
+	}
 	xnet.Transport(conn, cc)
 
 	return nil

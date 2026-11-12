@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author QAQ
@@ -35,6 +35,8 @@ public class Forward extends BaseEntity{
     private String interfaceName;
 
     private String strategy;
+
+    private Integer proxyProtocolSend = 0;
 
     private Long inFlow;
 

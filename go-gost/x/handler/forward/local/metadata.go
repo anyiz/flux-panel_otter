@@ -4,6 +4,7 @@ import (
 	"crypto"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"time"
 
 	"github.com/go-gost/core/bypass"
@@ -13,6 +14,7 @@ import (
 )
 
 type metadata struct {
+	proxyProtocol int
 	readTimeout   time.Duration
 	httpKeepalive bool
 
@@ -28,6 +30,10 @@ type metadata struct {
 }
 
 func (h *forwardHandler) parseMetadata(md mdata.Metadata) (err error) {
+	h.md.proxyProtocol = mdutil.GetInt(md, "proxyProtocol")
+	if h.md.proxyProtocol < 0 || h.md.proxyProtocol > 2 {
+		return fmt.Errorf("invalid proxyProtocol")
+	}
 	h.md.readTimeout = mdutil.GetDuration(md, "readTimeout")
 	if h.md.readTimeout <= 0 {
 		h.md.readTimeout = 15 * time.Second
