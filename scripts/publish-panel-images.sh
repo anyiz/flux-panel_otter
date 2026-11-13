@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Run after `docker login` from the repository root.
 namespace="${1:?Usage: scripts/publish-panel-images.sh DOCKERHUB_USER [TAG] [PLATFORM]}"
-tag="${2:-1.4.3-otter.2}"
+tag="${2:-1.4.3-otter.3}"
 platform="${3:-linux/amd64}"
 cd "$(dirname "$0")/.."
 

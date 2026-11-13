@@ -1,5 +1,17 @@
 # Publish and deploy the modified Flux panel
 
+## Flux Otter 1.4.3-otter.3
+
+This release fixes the PROXY metadata wire type. The backend previously encoded the version as a JSON number, decoded by GOST as float64 and silently read as zero. It now sends a string, compatible with the existing agent; API/database integer fields remain unchanged.
+
+Use `anyi662/springboot-backend:1.4.3-otter.3` and `anyi662/vite-frontend:1.4.3-otter.3` (linux/amd64). The frontend image content is unchanged from .2. Installers and generated agent commands use the .3 GitHub Release.
+
+Run `mvn -Dtest=GostProxyProtocolWireTest package` to verify TCP v1/v2 direct/tunnel serialization and disabled/UDP behavior. CI also runs these checks before publishing the Release.
+
+When upgrading from the locally deployed `otter-flux-backend:1.4.3-otter.2-proxyfix1`, replace only the Flux panel image references. Preserve environment values, MySQL volumes, ports, forwarding rules, and all Xboard Redis/lease allowlists. The temporary hotfix build and original Compose backup remain under `/opt/flux/proxyfix-20261113` for rollback.
+
+When upgrading from the original .2 backend, re-save only intended PROXY-enabled forwards after updating so the corrected metadata reaches GOST. Do not repeat the existing database migration and do not restart ingress agents solely for this backend fix. Do not deploy the original .2 backend over the fix.
+
 ## Flux Otter 1.4.3-otter.2
 
 The `linux/amd64` images for this release are published and verified on Docker Hub. The frontend is unchanged from `1.4.3-otter.1` and reuses its image content:

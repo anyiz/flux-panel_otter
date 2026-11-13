@@ -24,15 +24,15 @@
 ## 部署流程
 ---
 ### Docker Compose部署
-#### Flux Otter 1.4.3-otter.2
+#### Flux Otter 1.4.3-otter.3
 
 面板端（全新安装）：
 ```bash
-curl -fL https://github.com/anyiz/flux-panel_otter/releases/download/1.4.3-otter.2/panel_install.sh -o panel_install.sh && chmod +x panel_install.sh && ./panel_install.sh
+curl -fL https://github.com/anyiz/flux-panel_otter/releases/download/1.4.3-otter.3/panel_install.sh -o panel_install.sh && chmod +x panel_install.sh && ./panel_install.sh
 ```
 中转节点 Agent：
 ```bash
-curl -fL https://github.com/anyiz/flux-panel_otter/releases/download/1.4.3-otter.2/install.sh -o install.sh && chmod +x install.sh && ./install.sh -a PANEL_IP:6365 -s NODE_SECRET
+curl -fL https://github.com/anyiz/flux-panel_otter/releases/download/1.4.3-otter.3/install.sh -o install.sh && chmod +x install.sh && ./install.sh -a PANEL_IP:6365 -s NODE_SECRET
 ```
 
 现有面板升级前请先备份数据库并阅读 [升级说明](doc/dockerhub-upgrade.md)。节点 Agent 与面板镜像分别发布；只替换 Docker 镜像不会更新 `/etc/gost/gost`。

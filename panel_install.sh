@@ -8,12 +8,12 @@ export LC_ALL=C
 
 
 # 全局下载地址配置
-RELEASE_BASE_URL="https://github.com/anyiz/flux-panel_otter/releases/download/1.4.3-otter.2"
+RELEASE_BASE_URL="https://github.com/anyiz/flux-panel_otter/releases/download/1.4.3-otter.3"
 DOCKER_COMPOSEV4_URL="${RELEASE_BASE_URL}/docker-compose-v4.yml"
 DOCKER_COMPOSEV6_URL="${RELEASE_BASE_URL}/docker-compose-v6.yml"
 GOST_SQL_URL="${RELEASE_BASE_URL}/gost.sql"
 FLUX_DOCKERHUB_USER="anyi662"
-FLUX_IMAGE_TAG="1.4.3-otter.2"
+FLUX_IMAGE_TAG="1.4.3-otter.3"
 
 COUNTRY=$(curl -s https://ipinfo.io/country)
 if [ "$COUNTRY" = "CN" ]; then

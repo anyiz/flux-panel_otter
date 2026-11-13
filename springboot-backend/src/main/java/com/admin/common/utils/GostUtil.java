@@ -331,7 +331,8 @@ public class GostUtil {
         JSONObject handler = createHandler(protocol, name, fow_type);
         if ("tcp".equals(protocol) && proxyProtocolSend != null && proxyProtocolSend > 0) {
             JSONObject headerOptions = new JSONObject();
-            headerOptions.put("proxyProtocol", proxyProtocolSend);
+            // GOST JSON metadata numbers decode as float64; GetInt accepts strings.
+            headerOptions.put("proxyProtocol", String.valueOf(proxyProtocolSend));
             handler.put("metadata", headerOptions);
         }
         service.put("handler", handler);

@@ -29,6 +29,17 @@ jobs:
           grep -F "releases/download/${GITHUB_REF_NAME}" panel_install.sh
           grep -F "FLUX_IMAGE_TAG=\"${GITHUB_REF_NAME}\"" panel_install.sh
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: springboot-backend/pom.xml
+
+      - name: Verify PROXY metadata wire compatibility
+        working-directory: springboot-backend
+        run: mvn -B -Dtest=GostProxyProtocolWireTest package
+
       - name: Build Linux GOST binaries
         shell: bash
         run: |
@@ -53,4 +64,4 @@ jobs:
             doc/migrations/20261111_proxy_protocol.sql \
             --verify-tag \
             --title "Flux Otter $GITHUB_REF_NAME" \
-            --notes-file doc/release-notes-1.4.3-otter.2.md
+            --notes-file "doc/release-notes-${GITHUB_REF_NAME}.md"
